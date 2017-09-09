@@ -28,7 +28,7 @@ class class_steefac{
     $prefix=api_g("api-table-prefix");
     return $prefix.$item;
   }
-  static function all_keys( ) {
+  static function keys_req( ) {
     return [
       "level"=>1,
       "license"=>4,
@@ -73,7 +73,7 @@ class class_steefac{
   //其他字段不可用参数修改，比如 del flag access 等字段
   static function data_all( ) {
     $data=[];
-    $keys=self::all_keys();
+    $keys=self::keys_req();
     $d= json_decode(API::INP('d'), true);
     api_g('query-d',$d);
     foreach ($keys as $k => $v){
@@ -84,7 +84,7 @@ class class_steefac{
     return $data;
   }
   static function data_check(  $data ) {
-    $keys=self::all_keys();
+    $keys=self::keys_req();
     $err='';
     foreach ($keys as $k => $v){
       if( isset($data[$k]) && strlen($data[$k])<$v ) {
@@ -92,6 +92,14 @@ class class_steefac{
       }
     }
     return $err;
+  }
+  static function keys_list(  $data ) {
+    $keys=self::keys_req();
+    $ky=[];
+    foreach ($keys as $k => $v){
+      $ky[]=$k;
+    }
+    return $ky;
   }
 // \\=========================================================
    
@@ -114,8 +122,83 @@ class class_steefac{
       return API::msg(202001,'Error: Create data.');
     }
     $data['id']=$r;
-    return API::data([$tblname,$db,$data]);
+    return API::data($data);
   }  
- 
+   /**
+   *  API:
+   *    /steefac/add
+
+   */
+  public static function search( ) {
+    $tblname=self::table_name();
+    $db=api_g('db');
+    
+    //字段名
+    $ky=self::keys_list();
+    
+    //页数
+    $count=intval(API::INP('count'));
+    if($count<5)$count=5;
+    if($count>500)$count=500;
+
+    $page=intval(API::INP('page'));
+    if($page<1)$page=1;
+    
+    $tik=0;
+    $andArray=[];
+
+
+    //坐标范围搜索： 纬度1,经度1,纬度2,经度2
+    $latlng=explode(',',API::INP('latlng'));
+    if(count($latlng)==4) { // 4个数字就假定其格式正确
+      $lat1=intval($latlng[0]);
+      $lng1=intval($latlng[1]);
+      $lat2=intval($latlng[2]);
+      $lng2=intval($latlng[3]);
+      $posand=['lngE7[>]'=>$lng1,'lngE7[<]'=>$lng2,'latE7[>]'=>$lat1,'latE7[<]'=>$lat2 ];
+      $tik++;
+      $andArray["and#t$tik"]=$posand;
+    }
+
+    //搜索字符
+    $search=API::INP('s');
+    if(strlen($search)>0) {
+      $k= preg_split("/[\s,;]+/",$search);
+      $s_key=[ "license",
+        "name",
+        "addr",
+
+        "province",
+        "city",
+        "district",
+        "citycode",
+        "adcode",
+        "formatted_address",
+
+        "goodat"
+      ];
+      $w_or=[];
+      for($i=count($k); $i--;  ) {
+        $or_list=[];
+        for($j=count($s_key); $j--; ) {
+          $or_list[$s_key[$j].'[~]']=$k[$i];
+        }
+        $w_or["or#".$i]=$or_list;
+      }
+      $tik++;
+      $andArray["and#t$tik"]=$w_or;
+    }
+    
+    $where=["LIMIT" => [$page*$count-$count, $count] , "ORDER" => ["level ASC", "cap_y DESC"]] ;
+    if(count($andArray))
+        $where['and'] = $andArray ;
+
+
+    var_dump($where);
+    $r=$db->select($tblname, $ky,$where);
+    $res['data']=$r;
+    return API::data($r);
+
+  } 
   
 }
