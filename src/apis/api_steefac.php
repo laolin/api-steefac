@@ -268,5 +268,24 @@ class class_steefac{
     return API::data($r);
   }  
   //=====【---D】==【Delete】==============
+   /**
+   *  API:
+   *    /steefac/delete
+   */
+  public static function delete( ) {
+
+    $db=api_g('db');
+    $tblname=self::table_name();
+    
+    $id=intval(API::INP('id'));
+    if(!$id) {
+      return API::msg(202001,'Error: id');
+    }
+    unset($data['id']);
+    
+    $r=$db->update($tblname, ['mark'=>'DEL'], ['id'=>$id] );
+
+    return API::data($r);
+  }  
 
 }
