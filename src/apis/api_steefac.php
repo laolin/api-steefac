@@ -126,8 +126,29 @@ class class_steefac{
   }  
    /**
    *  API:
-   *    /steefac/add
+   *    /steefac/detail
+   */
+  public static function detail( ) {
+    $tblname=self::table_name();
+    $db=api_g('db');
+    
+    //字段名
+    $ky=self::keys_list();
+    $ky[]='id';
+    $ky[]='mark';
+    $id=intval(API::INP('id'));
+    if($id<1) {
+      return API::msg(202001,'Error: id');
+    }
+    
+    $r=$db->get($tblname, $ky,
+      ['and' => ['id'=>$id,'or'=>['mark'=>null,'mark#'=>''] ] ] );
 
+    return API::data($r);
+  }  
+   /**
+   *  API:
+   *    /steefac/search
    */
   public static function search( ) {
     $tblname=self::table_name();
@@ -135,6 +156,8 @@ class class_steefac{
     
     //字段名
     $ky=self::keys_list();
+    $ky[]='id';
+    $ky[]='mark';
     
     //页数
     $count=intval(API::INP('count'));
@@ -148,13 +171,19 @@ class class_steefac{
     $andArray=[];
 
 
-    //坐标范围搜索： 纬度1,经度1,纬度2,经度2
-    $latlng=explode(',',API::INP('latlng'));
-    if(count($latlng)==4) { // 4个数字就假定其格式正确
-      $lat1=intval($latlng[0]);
-      $lng1=intval($latlng[1]);
-      $lat2=intval($latlng[2]);
-      $lng2=intval($latlng[3]);
+    //坐标范围搜索： 纬度 ,经度(*1e7), 距离(m)
+    //1米 = 0.00001度 近似
+    $lat=intval(API::INP('lat'));
+    $lng=intval(API::INP('lng'));
+    $dist=intval(API::INP('dist'));
+    if($lat>10E7 && $lat < 55e7 
+      && $lng>70E7 && $lng < 140e7
+      && $dist>100 && $dist < 999E3) {
+        // 此条件下 假定其格式正确
+      $lat1=$lat-$dist*100;
+      $lng1=$lng-$dist*100;
+      $lat2=$lat+$dist*100;
+      $lng2=$lng+$dist*100;
       $posand=['lngE7[>]'=>$lng1,'lngE7[<]'=>$lng2,'latE7[>]'=>$lat1,'latE7[<]'=>$lat2 ];
       $tik++;
       $andArray["and#t$tik"]=$posand;
@@ -188,13 +217,17 @@ class class_steefac{
       $tik++;
       $andArray["and#t$tik"]=$w_or;
     }
+
+    //正常标记的才返回
+    $tik++;
+    $andArray["and#t$tik"]=['or'=>['mark#1'=>null,'mark#2'=>'']];
     
-    $where=["LIMIT" => [$page*$count-$count, $count] , "ORDER" => ["level ASC", "cap_y DESC"]] ;
+    $where=["LIMIT" => [$page*$count-$count, $count] , "ORDER" => ["level ASC", "cap_y DESC","id DESC"]] ;
     if(count($andArray))
-        $where['and'] = $andArray ;
+      $where['and'] = $andArray ;
 
 
-    var_dump($where);
+    //var_dump($where);
     $r=$db->select($tblname, $ky,$where);
     $res['data']=$r;
     return API::data($r);
