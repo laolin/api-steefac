@@ -103,6 +103,7 @@ class class_steefac{
   }
 // \\=========================================================
    
+   //=====【C---】==【Create】==============
    /**
    *  API:
    *    /steefac/add
@@ -124,6 +125,9 @@ class class_steefac{
     $data['id']=$r;
     return API::data($data);
   }  
+
+
+  //=====【-R--】==【Restrive】==============
    /**
    *  API:
    *    /steefac/detail
@@ -233,5 +237,34 @@ class class_steefac{
     return API::data($r);
 
   } 
-  
+
+
+  //=====【--U-】==【Update】==============
+   /**
+   *  API:
+   *    /steefac/update
+   */
+  public static function update( ) {
+
+    $data=self::data_all();
+    $err=self::data_check(  $data );
+    if($err) {
+      return API::msg(202001,'Error: '.$err);
+      //return API::data([$err,$data]);
+    }
+    $db=api_g('db');
+    $tblname=self::table_name();
+    
+    $id=intval(API::INP('id'));
+    if(!$id) {
+      return API::msg(202001,'Error: id');
+    }
+    unset($data['id']);
+    
+    $r=$db->update($tblname, $data, ['id'=>$id] );
+
+    return API::data($r);
+  }  
+  //=====【---D】==【Delete】==============
+
 }
