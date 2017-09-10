@@ -197,7 +197,9 @@ class class_steefac{
     $search=API::INP('s');
     if(strlen($search)>0) {
       $k= preg_split("/[\s,;]+/",$search);
-      $s_key=[ "license",
+      $s_key=[
+        "id",
+        "license",
         "name",
         "addr",
 
@@ -205,7 +207,7 @@ class class_steefac{
         "city",
         "district",
         "citycode",
-        "adcode",
+        //"adcode",
         "formatted_address",
 
         "goodat"
