@@ -3,6 +3,7 @@
 /*
  
 */
+require_once dirname( __FILE__ ) . '/class.stee_user.php';
 class class_steefac{
     
     
@@ -109,6 +110,16 @@ class class_steefac{
    *    /steefac/add
    */
   public static function add( ) {
+    $r=self::userVerify();
+    if(!$r)
+      return API::msg(202001,'error userVerify');
+    $uid=intval(API::INP('uid'));
+    
+    $user=stee_user::get_user($uid );
+    if(!($user['is_admin'] & 0x10000)) {
+      return API::msg(202001,'not sysadmin '.$user['is_admin']);
+    }
+    
     $data=self::data_all();
     $err=self::data_check(  $data );
     if($err) {
@@ -247,6 +258,20 @@ class class_steefac{
    *    /steefac/update
    */
   public static function update( ) {
+    $r=self::userVerify();
+    if(!$r)
+      return API::msg(202001,'error userVerify');
+    
+    $id=intval(API::INP('id'));
+    if( !$id) {
+      return API::msg(202001,'Error: id'.$id);
+    }
+    
+    $uid=intval(API::INP('uid'));
+    $user=stee_user::get_user($uid );
+    if(!($user['is_admin']& 0x10000) && !strpos('#,'.$user['fac_can_admin'].',', ','.$id.',') ) {
+      return API::msg(202001,"not admin($id) or sysadmin");
+    }
 
     $data=self::data_all();
     $err=self::data_check(  $data );
@@ -256,11 +281,6 @@ class class_steefac{
     }
     $db=api_g('db');
     $tblname=self::table_name();
-    
-    $id=intval(API::INP('id'));
-    if(!$id) {
-      return API::msg(202001,'Error: id');
-    }
     unset($data['id']);
     
     $r=$db->update($tblname, $data, ['id'=>$id] );
@@ -281,7 +301,12 @@ class class_steefac{
     if(!$id) {
       return API::msg(202001,'Error: id');
     }
-    unset($data['id']);
+
+    $uid=intval(API::INP('uid'));
+    $user=stee_user::get_user($uid );
+    if(!($user['is_admin']& 0x10000) && !strpos('#,'.$user['fac_can_admin'].',', ','.$id.',') ) {
+      return API::msg(202001,"not admin($id) or sysadmin");
+    }
     
     $r=$db->update($tblname, ['mark'=>'DEL'], ['id'=>$id] );
 
