@@ -31,6 +31,7 @@ class class_steefac{
   }
   static function keys_req( ) {
     return [
+      "update_at"=>0,
       "level"=>1,
       "license"=>4,
       "name"=>4,
@@ -81,7 +82,7 @@ class class_steefac{
       self::data_val($d,$k,$data);
     }
     
-   
+   $data['update_at']=time();
     return $data;
   }
   static function data_check(  $data ) {
