@@ -23,7 +23,20 @@ class stee_user {
     $r=$db->get($tblname, $ky,
       ['uid'=>$uid ] );
     return ($r);
-  }  
+  }
+  public static function get_admin_of_fac($id) {
+    $tblname=self::table_name();
+    $db=api_g('db');
+    //字段名
+    $ky=self::_keys();
+    
+    $r=$db->select($tblname, $ky,['and'=>[
+        'is_admin[>]'=>0,
+        'or'=> [ 'fac_main'=>$id,'fac_can_admin[~]'=>"$id" ]
+      ]]);
+    return $r;
+  } 
+
 
   
 }

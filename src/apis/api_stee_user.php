@@ -53,6 +53,22 @@ class class_stee_user {
     
     return API::data($r);
   }  
+   /**
+   *  API:
+   *    /steel_user/get_admin_of_fac
+   *  获得一个fac的管理员
+   */
+  public static function get_admin_of_fac( ) {
+    
+    if(!self::userVerify()) {
+      return API::msg(202001,'Error userVerify@get');
+    }
+    $id=intval(API::INP('id'));
+    $r=stee_user::get_admin_of_fac($id);
+    
+    return API::data($r);
+  }  
+
 
   
 }
