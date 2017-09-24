@@ -240,7 +240,7 @@ class class_steefac{
     $tik++;
     $andArray["and#t$tik"]=['or'=>['mark#1'=>null,'mark#2'=>'']];
     
-    $where=["LIMIT" => [$page*$count-$count, $count] , "ORDER" => ["level ASC", "cap_y DESC","id DESC"]] ;
+    $where=["LIMIT" => [$page*$count-$count, $count] , "ORDER" => ["cap_6m DESC","update_at DESC","id DESC"]] ;
     if(count($andArray))
       $where['and'] = $andArray ;
 
