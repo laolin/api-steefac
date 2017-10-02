@@ -171,9 +171,23 @@ class class_steefac{
     $db=api_g('db');
     
     //字段名
-    $ky=self::keys_list();
-    $ky[]='id';
-    $ky[]='mark';
+    $ky=[
+      'id',
+      'mark',
+      "update_at",
+      "level",
+      "name",
+      "latE7",
+      "lngE7",
+      //"province",
+      //"city",
+      //"district",
+      
+      "cap_y",
+      "cap_6m",
+      "goodat",
+      "area_factory"
+    ];
     $ids=API::INP('ids');
     if(strlen($ids)==0) {
       return API::msg(202001,'Error: ids');
