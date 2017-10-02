@@ -45,7 +45,7 @@ class stee_user {
     
     $r=$db->select($tblname, $ky,['and'=>[
         'is_admin[>]'=>0
-      ]]);
+      ],"ORDER" =>'id DESC']);
     return $r;
   } 
 
