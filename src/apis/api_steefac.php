@@ -358,8 +358,13 @@ class class_steefac{
 
     $uid=intval(API::INP('uid'));
     $user=stee_user::get_user($uid );
-    if(!($user['is_admin']& 0x10000) && !strpos('#,'.$user['fac_can_admin'].',', ','.$id.',') ) {
-      return API::msg(202001,"not admin($id) or sysadmin");
+    
+    //只允许系统管理员删除
+    //if(!($user['is_admin']& 0x10000) && !strpos('#,'.$user['fac_can_admin'].',', ','.$id.',') ) {
+      //return API::msg(202001,"not admin($id) or sysadmin");
+    //}
+    if(!($user['is_admin']& 0x10000) ) {
+      return API::msg(202001,"not sysadmin");
     }
     
     $r=$db->update($tblname, ['mark'=>'DEL'], ['id'=>$id] );
