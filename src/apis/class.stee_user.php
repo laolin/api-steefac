@@ -37,6 +37,17 @@ class stee_user {
     return $r;
   } 
 
+  public static function get_admins() {
+    $tblname=self::table_name();
+    $db=api_g('db');
+    //字段名
+    $ky=self::_keys();
+    
+    $r=$db->select($tblname, $ky,['and'=>[
+        'is_admin[>]'=>0
+      ]]);
+    return $r;
+  } 
 
   
 }

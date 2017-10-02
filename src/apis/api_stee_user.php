@@ -52,7 +52,31 @@ class class_stee_user {
     $r=stee_user::get_user($uid);
     
     return API::data($r);
-  }  
+  }
+  
+  
+   /**
+   *  API:
+   *    /steel_user/get_admins
+   *  获得 所有的管理员
+   */
+  public static function get_admins( ) {
+    
+    if(!self::userVerify()) {
+      return API::msg(202001,'Error userVerify@get');
+    }
+    
+    $uid=intval(API::INP('uid'));
+    $user=stee_user::get_user($uid );
+    if(!($user['is_admin']& 0x10000)) {
+      return API::msg(202001,"not sysadmin");
+    }
+    
+    $r=stee_user::get_admins();
+    
+    return API::data($r);
+  }
+  
    /**
    *  API:
    *    /steel_user/get_admin_of_fac
