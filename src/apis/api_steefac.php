@@ -161,7 +161,30 @@ class class_steefac{
       ['and' => ['id'=>$id,'or'=>['mark'=>null,'mark#'=>''] ] ] );
 
     return API::data($r);
-  }  
+  }
+  /**
+   *  API:
+   *    /steefac/li
+   */
+  public static function li( ) {
+    $tblname=self::table_name();
+    $db=api_g('db');
+    
+    //字段名
+    $ky=self::keys_list();
+    $ky[]='id';
+    $ky[]='mark';
+    $ids=API::INP('ids');
+    if(strlen($ids)==0) {
+      return API::msg(202001,'Error: ids');
+    }
+    $idsArr=explode(',',$ids);
+    $r=$db->select($tblname, $ky,
+      ['and' => ['id'=>$idsArr,'or'=>['mark'=>null,'mark#'=>''] ] ] );
+
+    return API::data($r);
+  }
+
    /**
    *  API:
    *    /steefac/search
