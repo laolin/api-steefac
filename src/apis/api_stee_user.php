@@ -30,10 +30,15 @@ class class_stee_user {
    //=====【C---】==【Create】==============
    /**
    *  API:
-   *    /steel_user/add
+   *    /steel_user/applyAdmins
    */
-  public static function add( ) {
-
+  public static function apply_fac_admin( ) {
+    if(!self::userVerify()) {
+      return API::msg(202001,'Error userVerify@get');
+    }
+    $userid=intval(API::INP('userid'));
+    $facid=intval(API::INP('facid'));
+    return stee_user::apply_fac_admin($userid,$facid);
   }  
 
 
@@ -87,10 +92,8 @@ class class_stee_user {
     if(!self::userVerify()) {
       return API::msg(202001,'Error userVerify@get');
     }
-    $id=intval(API::INP('id'));
-    $r=stee_user::get_admin_of_fac($id);
-    
-    return API::data($r);
+    $facid=intval(API::INP('facid'));
+    return stee_user::get_admin_of_fac($facid);
   }  
 
 
