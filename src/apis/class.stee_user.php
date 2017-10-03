@@ -14,7 +14,7 @@ class stee_user {
     return ['id','uid','name','is_admin','fac_main','fac_can_admin'];
   }  
 //=================================================
-//  普通用户申请 一个工厂的管理权限
+//  普通用户申请增加一个工厂的管理权限
   public static function apply_fac_admin($userid,$facid) {
     $tblname=self::table_name();
     $db=api_g('db');
@@ -68,9 +68,6 @@ class stee_user {
         'is_admin[>]'=>0,
         'or'=> [ 'fac_main'=>$facid,'fac_can_admin[~]'=>"$facid" ]
       ]]);
-    if( !$r ){
-      return API::msg(202001,"run sql err");
-    }
     return API::data($r);
   } 
 
