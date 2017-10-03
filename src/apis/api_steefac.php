@@ -327,7 +327,8 @@ class class_steefac{
       return API::msg(202001,"not admin($id) or sysadmin");
     }
 
-    $data=self::data_all();
+    $data= json_decode(API::INP('d'), true);
+    //$data=self::data_all();
     $err=self::data_check(  $data );
     if($err) {
       return API::msg(202001,'Error: '.$err);
