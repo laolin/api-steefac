@@ -57,6 +57,7 @@ class class_steefac{
       "workers_xiangtu"=>0,
       "workers_other"=>0,
       "goodat"=>0,
+      "fee"=>0,
       "area_factory"=>0,
       "area_duichang"=>0,
       "max_hangche"=>0,
