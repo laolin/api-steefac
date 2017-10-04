@@ -82,7 +82,7 @@ class class_steefac{
       self::data_val($d,$k,$data);
     }
     
-   $data['update_at']=time();
+    $data['update_at']=time();
     return $data;
   }
   static function data_check(  $data ) {
@@ -337,6 +337,7 @@ class class_steefac{
     $db=api_g('db');
     $tblname=self::table_name();
     unset($data['id']);
+    $data['update_at']=time();
     
     $r=$db->update($tblname, $data, ['id'=>$id] );
 
