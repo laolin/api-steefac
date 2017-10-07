@@ -45,6 +45,9 @@ class class_steefac{
       "adcode"=>0,
       "formatted_address"=>4,
       
+      "contact_person"=>0,
+      "contact_tel"=>0,
+      "contact_email"=>0,
       "cap_y"=>0,
       "cap_1m"=>0,
       "cap_2m"=>0,
