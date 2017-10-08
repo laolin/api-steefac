@@ -11,7 +11,7 @@ class stee_user {
     return $prefix.$item;
   }
   static function _keys(   ) {
-    return ['id','uid','name','is_admin','fac_main','fac_can_admin'];
+    return ['id','uid','name','is_admin','update_at','fac_can_admin'];
   }  
 //=================================================
 //  普通用户申请增加一个工厂的管理权限
@@ -36,7 +36,8 @@ class stee_user {
       else $r['fac_can_admin']=$facid;
       $r2=$db->update($tblname,$r,['id'=>$id]);
     } else {
-      $data=['uid'=>$userid,'is_admin'=>1,'fac_main'=>$facid,'fac_can_admin'=>$facid];
+      $data=['uid'=>$userid,'is_admin'=>1,
+        'fac_can_admin'=>$facid];
       $r2=$db->insert($tblname,$data);
     }
     if( !$r2 ){
@@ -52,7 +53,7 @@ class stee_user {
     $ky=self::_keys();
     
     $r=$db->get($tblname, $ky,
-      ['uid'=>$uid ] );
+      ['and'=>['uid'=>$uid ,'mark'=>'']] );
     return ($r);
   }
   public static function get_admin_of_fac($facid) {
@@ -66,8 +67,9 @@ class stee_user {
     
     $r=$db->select($tblname, $ky,['and'=>[
         'is_admin[>]'=>0,
-        'or'=> [ 'fac_main'=>$facid,'fac_can_admin[~]'=>"$facid" ]
-      ]]);
+        'mark'=>'',
+        'fac_can_admin[~]'=>"$facid"
+      ],"ORDER" =>'update_at DESC']);
     return API::data($r);
   } 
 
@@ -78,8 +80,8 @@ class stee_user {
     $ky=self::_keys();
     
     $r=$db->select($tblname, $ky,['and'=>[
-        'is_admin[>]'=>0
-      ],"ORDER" =>'id DESC']);
+        'is_admin[>]'=>0,'mark'=>'',
+      ],"ORDER" =>'update_at DESC']);
     return $r;
   } 
 
