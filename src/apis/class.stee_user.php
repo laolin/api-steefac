@@ -25,7 +25,7 @@ class stee_user {
     if($r) {
       $id=$r['id'];
       unset($r['id']);
-      $r['is_admin'] &=1;
+      $r['is_admin'] |= 1;
       if($r['fac_can_admin']){
         $ff=explode(',',$r['fac_can_admin']);
         if(count($ff)>3){
