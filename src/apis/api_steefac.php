@@ -120,10 +120,10 @@ class class_steefac{
       return API::msg(202001,'error userVerify');
     $uid=intval(API::INP('uid'));
     
-    $user=stee_user::get_user($uid );
-    if(!($user['is_admin'] & 0x10000)) {
-      return API::msg(202001,'not sysadmin '.$user['is_admin']);
-    }
+    // $user=stee_user::get_user($uid );
+    // if(!($user['is_admin'] & 0x10000)) {
+      // return API::msg(202001,'not sysadmin '.$user['is_admin']);
+    // }
     
     $data=self::data_all();
     $err=self::data_check(  $data );
@@ -139,6 +139,14 @@ class class_steefac{
       return API::msg(202001,'Error: Create data.');
     }
     $data['id']=$r;
+    
+    //不是系统管理员，创建后，自动成为新厂的管理员
+    $user=stee_user::get_user($uid );
+    if(!($user['is_admin'] & 0x10000)) {
+      $appadmin=stee_user::apply_fac_admin($uid,$r);
+    }
+
+    $data['appadmin'] = $appadmin;
     return API::data($data);
   }  
 
@@ -345,6 +353,7 @@ class class_steefac{
     
     $r=$db->update($tblname, $data, ['id'=>$id] );
 
+    //var_dump($db);
     return API::data($r);
   }  
   //=====【---D】==【Delete】==============
