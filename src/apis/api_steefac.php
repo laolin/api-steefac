@@ -242,8 +242,13 @@ class class_steefac{
     
     //页数
     $count=intval(API::INP('count'));
+    $count_max=50;
+    $user=stee_user::get_user($uid );
+    if(!($user['is_admin'] & 0x10000)) {
+      $count_max=5000;
+    }
     if($count<5)$count=5;
-    if($count>50)$count=50;
+    if($count>$count_max)$count=$count_max;
 
     $page=intval(API::INP('page'));
     if($page<1)$page=1;
