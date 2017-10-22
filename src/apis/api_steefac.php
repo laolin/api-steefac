@@ -243,7 +243,7 @@ class class_steefac{
     //页数
     $count=intval(API::INP('count'));
     if($count<5)$count=5;
-    if($count>500)$count=500;
+    if($count>50)$count=50;
 
     $page=intval(API::INP('page'));
     if($page<1)$page=1;
