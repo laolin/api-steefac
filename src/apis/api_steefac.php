@@ -99,7 +99,7 @@ class class_steefac{
     }
     return $err;
   }
-  static function keys_list(  $data ) {
+  static function keys_list( ) {
     $keys=self::keys_req();
     $ky=[];
     foreach ($keys as $k => $v){
