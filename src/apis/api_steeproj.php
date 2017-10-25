@@ -32,6 +32,18 @@ class class_steeproj {
       
       "size"=>3,
       "type"=>2,
+      
+      'steel_shape'=>2,
+      'steel_Qxxx'=>3,
+      'stee_price'=>3,
+      'advance_pay'=>1,
+      'provide_raw'=>1,
+      'require_check'=>1,
+      'contact_person'=>2,
+      'contact_tel'=>6,
+      'contact_email'=>6,
+      'notes'=>0,
+      
       "in_month"=>1,
       "need_steel"=>1
     ];
@@ -65,7 +77,7 @@ class class_steeproj {
     }
     return $err;
   }
-  static function keys_list(  $data ) {
+  static function keys_list( ) {
     $keys=self::keys_req();
     $ky=[];
     foreach ($keys as $k => $v){
@@ -147,8 +159,14 @@ class class_steeproj {
     
     //页数
     $count=intval(API::INP('count'));
+    $count_max=50;
+    $user=stee_user::get_user($uid );
+    if(!($user['is_admin'] & 0x10000)) {
+      $count_max=5000;
+    }
     if($count<5)$count=5;
-    if($count>500)$count=500;
+    if($count>$count_max)$count=$count_max;
+
 
     $page=intval(API::INP('page'));
     if($page<1)$page=1;
@@ -272,8 +290,8 @@ class class_steeproj {
 
     $uid=intval(API::INP('uid'));
     $user=stee_user::get_user($uid );
-    if(!($user['is_admin']& 0x10000) && !strpos('#,'.$user['fac_can_admin'].',', ','.$id.',') ) {
-      return API::msg(202001,"not admin($id) or sysadmin");
+    if(!($user['is_admin']& 0x10000) ) {
+      return API::msg(202001,"not sysadmin");
     }
     
     $r=$db->update($tblname, ['mark'=>'DEL'], ['id'=>$id] );
