@@ -106,6 +106,15 @@ class class_stee_user {
     return stee_user::get_admin_of_fac($facid);
   }  
 
+  public static function get_admin_of_obj( ) {
+    
+    if(!self::userVerify()) {
+      return API::msg(202001,'Error userVerify@get');
+    }
+    $type=API::INP('type');
+    $facid=intval(API::INP('facid'));
+    return stee_user::get_admin_of_obj($type,$facid);
+  }  
 
   
 }
