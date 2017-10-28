@@ -197,10 +197,8 @@ class class_steeobj{
     if(!$kr[$type])$type='steefac';
     return $kr[$type];
   }
-  static function data_val($d, $key, & $data ) {
-    if(false === $d[$key]) return;
-    $data[$key]=$d[$key];
-  }
+  
+  
   
   // $type 3
   //TODO: 有效性检查
@@ -209,10 +207,12 @@ class class_steeobj{
   static function data_all($type ) {
     $data=[];
     $keys=self::keys_req($type);
+    
     $d= json_decode(API::INP('d'), true);
     api_g('query-d',$d);
-    foreach ($keys as $k => $v){
-      self::data_val($d,$k,$data);
+    foreach ($keys as $key => $v){
+      if(isset($d[$key]))
+       $data[$key]=$d[$key];
     }
     
     $data['update_at']=time();
@@ -456,8 +456,8 @@ class class_steeobj{
       return API::msg(202001,"not admin($id) or sysadmin");
     }
 
-    $data= json_decode(API::INP('d'), true);
-    //$data=self::data_all();
+    $data=self::data_all();
+    
     $err=self::data_check( $type, $data );
     if($err) {
       return API::msg(202001,'Err:'.$err);
