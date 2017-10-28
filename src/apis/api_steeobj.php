@@ -4,7 +4,7 @@
  
 */
 require_once dirname( __FILE__ ) . '/class.stee_user.php';
-class class_steefac{
+class class_steeobj{
     
     
   public static function main( $para1,$para2) {
@@ -24,13 +24,105 @@ class class_steefac{
   }
  
 //=========================================================
-  //获取 数据表名
-  static function table_name( $item='steelfactory' ) {
+  //获取 数据表名 $type 1
+  static function table_name( $type ) {
+    $tnames=[
+      'steefac'=>'steelfactory',
+      'steeproj'=>'steelproject',
+    ];
+    
+    $name=$tnames[$type];
+    if(!$name)$name=$tnames['steefac'];
     $prefix=api_g("api-table-prefix");
-    return $prefix.$item;
+    return $prefix.$name;
   }
-  static function keys_req( ) {
-    return [
+  
+  
+  //预览用到的字段，用在 /li API中
+  static function keys_preivew( $type ) {
+    $kr=[];
+    //钢构厂
+    $kr['steefac']=[
+      'id',
+      'mark',
+      "update_at",
+      "level",
+      "name",
+      "addr",
+      "latE7",
+      "lngE7",
+      //"province",
+      //"city",
+      //"district",
+      
+      "cap_y",
+      "cap_6m",
+      "goodat",
+      "area_factory"
+    ];
+    $kr['steeproj']= [
+      'id',
+      'mark',
+      "update_at",
+      "name",
+      "addr",
+      "latE7",
+      "lngE7",
+      
+      'steel_shape',
+      'steel_Qxxx',
+      
+      "in_month",
+      "need_steel"
+    ];
+    
+    if(!$kr[$type])$type='steefac';
+    return $kr[$type];
+  }
+  //搜索查找 的字段，用在 /search API中
+  static function keys_search( $type ) {
+    $kr=[];
+    //钢构厂
+    $kr['steefac']=[
+      "id",
+      "license",
+      "name",
+      "addr",
+
+      "province",
+      "city",
+      "district",
+      "citycode",
+      //"adcode",
+      "formatted_address",
+
+      "goodat"
+    ];
+    $kr['steeproj']= [
+      'id',
+      "name",
+      "addr",
+      "province",
+      "city",
+      "district",
+      "citycode",
+      //"adcode",
+      "formatted_address",
+      
+      'steel_shape',
+      'steel_Qxxx'
+    ];
+    
+    if(!$kr[$type])$type='steefac';
+    return $kr[$type];
+  }
+  // $type 2
+  static function keys_req( $type ) {
+    
+    $kr=[];
+    
+    //钢构厂
+    $kr['steefac']=[
       "update_at"=>0,
       "level"=>1,
       "license"=>4,
@@ -69,17 +161,54 @@ class class_steefac{
       "dist_port"=>0,
       "dist_expressway"=>0
     ];
+    
+    //项目信息
+    $kr['steeproj']= [
+      "update_at"=>0,
+      "name"=>4,
+      "addr"=>4,
+      "latE7"=>5,
+      "lngE7"=>5,
+      "province"=>2,
+      "city"=>0,
+      "district"=>0,
+      "citycode"=>2,
+      "adcode"=>0,
+      "formatted_address"=>4,
+      
+      "size"=>3,
+      "type"=>2,
+      
+      'steel_shape'=>2,
+      'steel_Qxxx'=>3,
+      'stee_price'=>3,
+      'advance_pay'=>1,
+      'provide_raw'=>1,
+      'require_check'=>1,
+      'contact_person'=>2,
+      'contact_tel'=>6,
+      'contact_email'=>6,
+      'notes'=>0,
+      
+      "in_month"=>1,
+      "need_steel"=>1
+    ];
+    
+    if(!$kr[$type])$type='steefac';
+    return $kr[$type];
   }
   static function data_val($d, $key, & $data ) {
     if(false === $d[$key]) return;
     $data[$key]=$d[$key];
   }
+  
+  // $type 3
   //TODO: 有效性检查
   //这些是用于 update API 中 能直接通过参数能修改的字段
   //其他字段不可用参数修改，比如 del flag access 等字段
-  static function data_all( ) {
+  static function data_all($type ) {
     $data=[];
-    $keys=self::keys_req();
+    $keys=self::keys_req($type);
     $d= json_decode(API::INP('d'), true);
     api_g('query-d',$d);
     foreach ($keys as $k => $v){
@@ -89,8 +218,9 @@ class class_steefac{
     $data['update_at']=time();
     return $data;
   }
-  static function data_check(  $data ) {
-    $keys=self::keys_req();
+  // $type 4
+  static function data_check( $type, $data ) {
+    $keys=self::keys_req($type);
     $err='';
     foreach ($keys as $k => $v){
       if( isset($data[$k]) && strlen($data[$k])<$v ) {
@@ -99,8 +229,9 @@ class class_steefac{
     }
     return $err;
   }
-  static function keys_list( ) {
-    $keys=self::keys_req();
+  // $type 5
+  static function keys_list($type ) {
+    $keys=self::keys_req($type);
     $ky=[];
     foreach ($keys as $k => $v){
       $ky[]=$k;
@@ -120,19 +251,24 @@ class class_steefac{
       return API::msg(202001,'error userVerify');
     $uid=intval(API::INP('uid'));
     
+    $type=API::INP('type');
+    if(!stee_user::_check_obj_type( $type )) {
+      return API::msg(202001,'E:type:',$type);
+    }
+    
     // $user=stee_user::get_user($uid );
     // if(!($user['is_admin'] & 0x10000)) {
       // return API::msg(202001,'not sysadmin '.$user['is_admin']);
     // }
     
-    $data=self::data_all();
-    $err=self::data_check(  $data );
+    $data=self::data_all($type);
+    $err=self::data_check( $type, $data );
     if($err) {
       return API::msg(202001,'Error: '.$err);
       //return API::data([$err,$data]);
     }
     $db=api_g('db');
-    $tblname=self::table_name();
+    $tblname=self::table_name($type);
     $r=$db->insert($tblname,$data );
     //var_dump($db);
     if(!$r) {
@@ -157,11 +293,15 @@ class class_steefac{
    *    /steefac/detail
    */
   public static function detail( ) {
-    $tblname=self::table_name();
+    $type=API::INP('type');
+    if(!stee_user::_check_obj_type( $type )) {
+      return API::msg(202001,'E:type:',$type);
+    }
+    $tblname=self::table_name($type);
     $db=api_g('db');
     
     //字段名
-    $ky=self::keys_list();
+    $ky=self::keys_list($type);
     $ky[]='id';
     $ky[]='mark';
     $id=intval(API::INP('id'));
@@ -179,27 +319,16 @@ class class_steefac{
    *    /steefac/li
    */
   public static function li( ) {
-    $tblname=self::table_name();
+    $type=API::INP('type');
+    if(!stee_user::_check_obj_type( $type )) {
+      return API::msg(202001,'E:type:',$type);
+    }
+    $tblname=self::table_name($type);
     $db=api_g('db');
     
     //字段名
-    $ky=[
-      'id',
-      'mark',
-      "update_at",
-      "level",
-      "name",
-      "latE7",
-      "lngE7",
-      //"province",
-      //"city",
-      //"district",
-      
-      "cap_y",
-      "cap_6m",
-      "goodat",
-      "area_factory"
-    ];
+    $ky=self::keys_preivew($type);
+    
     $ids=API::INP('ids');
     if(strlen($ids)==0) {
       return API::msg(202001,'Error: ids');
@@ -216,30 +345,20 @@ class class_steefac{
    *    /steefac/search
    */
   public static function search( ) {
-    $tblname=self::table_name();
+    $type=API::INP('type');
+    if(!stee_user::_check_obj_type( $type )) {
+      return API::msg(202001,'E:type:',$type);
+    }
+    $tblname=self::table_name($type);
     $db=api_g('db');
     
-    //字段名
-    $ky=[
-
-      'id',
-      'mark',
-      "update_at",
-      "level",
-      "name",
-      "latE7",
-      "lngE7",
-      //"province",
-      //"city",
-      //"district",
-      
-      "cap_y",
-      "cap_6m",
-      "goodat",
-      "area_factory"
-    ];
-
+    //要返回的字段名
+    $kyRes=self::keys_list($type);
+    $kyRes[]='id';
+    $kyRes[]='mark';
     
+    $uid=intval(API::INP('uid'));
+
     //页数
     $count=intval(API::INP('count'));
     $count_max=50;
@@ -279,21 +398,8 @@ class class_steefac{
     $search=API::INP('s');
     if(strlen($search)>0) {
       $k= preg_split("/[\s,;]+/",$search);
-      $s_key=[
-        "id",
-        "license",
-        "name",
-        "addr",
-
-        "province",
-        "city",
-        "district",
-        "citycode",
-        //"adcode",
-        "formatted_address",
-
-        "goodat"
-      ];
+      $s_key=self::keys_search($type);
+      
       $w_or=[];
       for($i=count($k); $i--;  ) {
         $or_list=[];
@@ -310,13 +416,13 @@ class class_steefac{
     $tik++;
     $andArray["and#t$tik"]=['or'=>['mark#1'=>null,'mark#2'=>'']];
     
-    $where=["LIMIT" => [$page*$count-$count, $count] , "ORDER" => ["update_at DESC","cap_6m DESC","id DESC"]] ;
+    $where=["LIMIT" => [$page*$count-$count, $count] , "ORDER" => ["update_at DESC","id DESC"]] ;
     if(count($andArray))
       $where['and'] = $andArray ;
 
 
     //var_dump($where);
-    $r=$db->select($tblname, $ky,$where);
+    $r=$db->select($tblname, $kyRes,$where);
     $res['data']=$r;
     return API::data($r);
 
@@ -329,6 +435,11 @@ class class_steefac{
    *    /steefac/update
    */
   public static function update( ) {
+    $type=API::INP('type');
+    if(!stee_user::_check_obj_type( $type )) {
+      return API::msg(202001,'E:type:',$type);
+    }
+    
     $r=self::userVerify();
     if(!$r)
       return API::msg(202001,'error userVerify');
@@ -340,19 +451,20 @@ class class_steefac{
     
     $uid=intval(API::INP('uid'));
     $user=stee_user::get_user($uid );
-    if(!($user['is_admin']& 0x10000) && !strpos('#,'.$user['fac_can_admin'].',', ','.$id.',') ) {
+    
+    if(!($user['is_admin']& 0x10000) && !strpos('#,'.$user[$type.'_can_admin'].',', ','.$id.',') ) {
       return API::msg(202001,"not admin($id) or sysadmin");
     }
 
     $data= json_decode(API::INP('d'), true);
     //$data=self::data_all();
-    $err=self::data_check(  $data );
+    $err=self::data_check( $type, $data );
     if($err) {
-      return API::msg(202001,'Error: '.$err);
+      return API::msg(202001,'Err:'.$err);
       //return API::data([$err,$data]);
     }
     $db=api_g('db');
-    $tblname=self::table_name();
+    $tblname=self::table_name($type);
     unset($data['id']);
     $data['update_at']=time();
     
@@ -367,9 +479,13 @@ class class_steefac{
    *    /steefac/delete
    */
   public static function delete( ) {
+    $type=API::INP('type');
+    if(!stee_user::_check_obj_type( $type )) {
+      return API::msg(202001,'E:type:',$type);
+    }
 
     $db=api_g('db');
-    $tblname=self::table_name();
+    $tblname=self::table_name($type);
     
     $id=intval(API::INP('id'));
     if(!$id) {
