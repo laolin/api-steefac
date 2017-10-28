@@ -279,7 +279,7 @@ class class_steeobj{
     //不是系统管理员，创建后，自动成为新厂的管理员
     $user=stee_user::get_user($uid );
     if(!($user['is_admin'] & 0x10000)) {
-      $appadmin=stee_user::apply_fac_admin($uid,$r);
+      $appadmin=stee_user::apply_admin($type,$uid,$r);
     }
 
     $data['appadmin'] = $appadmin;
