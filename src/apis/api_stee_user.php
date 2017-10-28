@@ -40,6 +40,16 @@ class class_stee_user {
     $facid=intval(API::INP('facid'));
     return stee_user::apply_fac_admin($userid,$facid);
   }  
+  public static function apply_admin( ) {
+    if(!self::userVerify()) {
+      return API::msg(202001,'Error userVerify@get');
+    }
+    $type=API::INP('type');
+    $userid=intval(API::INP('uid'));
+    $facid=intval(API::INP('facid'));
+    return stee_user::apply_admin($type,$userid,$facid);
+  }  
+
 
 
   //=====【-R--】==【Restrive】==============

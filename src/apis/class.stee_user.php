@@ -15,7 +15,8 @@ class stee_user {
   }  
   static function  _check_obj_type( $type ) {
     $ok=['steefac','steeproj'];
-    return in_array($type,$ok);
+    //注意，这里需要true,严格类型检查
+    return in_array($type,$ok,true);
   }
 //=================================================
 //  普通用户申请增加一个工厂的管理权限
