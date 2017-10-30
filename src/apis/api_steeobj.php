@@ -352,8 +352,9 @@ class class_steeobj{
     $tblname=self::table_name($type);
     $db=api_g('db');
     
-    //要返回的字段名
-    $kyRes=self::keys_list($type);
+    //要返回的字段名 
+    //$kyRes=self::keys_list($type);
+    $kyRes=self::keys_preivew($type);
     $kyRes[]='id';
     $kyRes[]='mark';
     
@@ -363,7 +364,7 @@ class class_steeobj{
     $count=intval(API::INP('count'));
     $count_max=50;
     $user=stee_user::get_user($uid );
-    if(!($user['is_admin'] & 0x10000)) {
+    if( (intval($user['is_admin']) & 0x10000) ) {
       $count_max=5000;
     }
     if($count<5)$count=5;
