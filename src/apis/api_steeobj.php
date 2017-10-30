@@ -212,7 +212,7 @@ class class_steeobj{
     api_g('query-d',$d);
     foreach ($keys as $key => $v){
       if(isset($d[$key]))
-       $data[$key]=$d[$key];
+        $data[$key]=$d[$key];
     }
     
     $data['update_at']=time();
@@ -456,7 +456,7 @@ class class_steeobj{
       return API::msg(202001,"not admin($id) or sysadmin");
     }
 
-    $data=self::data_all();
+    $data=self::data_all($type);
     
     $err=self::data_check( $type, $data );
     if($err) {
