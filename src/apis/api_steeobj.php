@@ -280,9 +280,9 @@ class class_steeobj{
     $user=stee_user::get_user($uid );
     if(!($user['is_admin'] & 0x10000)) {
       $appadmin=stee_user::apply_admin($type,$uid,$r);
+      $data['appadmin'] = $appadmin;
     }
 
-    $data['appadmin'] = $appadmin;
     return API::data($data);
   }  
 
