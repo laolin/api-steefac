@@ -367,7 +367,7 @@ class class_steeobj{
     if( (intval($user['is_admin']) & 0x10000) ) {
       $count_max=5000;
     }
-    if($count<5)$count=5;
+    if($count<1)$count=1;
     if($count>$count_max)$count=$count_max;
 
     $page=intval(API::INP('page'));
