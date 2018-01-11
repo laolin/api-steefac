@@ -89,7 +89,7 @@ class class_stee_user {
     
     $r=stee_user::get_admins();
     
-    return API::data($r);
+    return ($r);
   }
   
    /**

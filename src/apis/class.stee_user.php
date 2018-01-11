@@ -144,7 +144,7 @@ class stee_user {
     $r=$db->select($tblname, $ky,['and'=>[
         'is_admin[>]'=>0,'mark'=>'',
       ],"ORDER" =>'update_at DESC']);
-    return $r;
+    return API::data($r);
   } 
 
   
