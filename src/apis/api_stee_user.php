@@ -64,7 +64,7 @@ class class_stee_user {
       return API::msg(202001,'Error userVerify@get');
     }
     $uid=intval(API::INP('uid'));
-    $r=stee_user::get_user($uid);
+    $r=stee_user::_get_user($uid);
     
     return API::data($r);
   }
@@ -82,7 +82,7 @@ class class_stee_user {
     }
     
     $uid=intval(API::INP('uid'));
-    $user=stee_user::get_user($uid );
+    $user=stee_user::_get_user($uid );
     if(!($user['is_admin']& 0x10000)) {
       return API::msg(202001,"not sysadmin");
     }

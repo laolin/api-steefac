@@ -60,8 +60,8 @@ class class_steesys {
       return API::data($data);
     }
     $uid=intval(API::INP('uid'));
-    $r=stee_user::get_user($uid);
     $data['me']=($r);
+    $r=stee_user::_get_user($uid);
 
         
 

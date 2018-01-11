@@ -1,6 +1,9 @@
 <?php
 //WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW
 /*
+ 除了 table_name 函数，其他函数首字命名规则：
+  以下划线开头的，返回普通PHP对象
+  以非下划线开头的，返回 API::msg对象。
  
 */
 class stee_user {
@@ -26,7 +29,7 @@ class stee_user {
     //字段名
     $ky=self::_keys();
     
-    $r=self::get_user($userid);
+    $r=self::_get_user($userid);
     if($r) {
       $id=$r['id'];
       unset($r['id']);
@@ -61,7 +64,7 @@ class stee_user {
     }
     
     $col_name=$type.'_can_admin';
-    $r=self::get_user($userid);
+    $r=self::_get_user($userid);
     if($r) {
       $id=$r['id'];
       unset($r['id']);
@@ -86,7 +89,7 @@ class stee_user {
     return API::data($r2);
   }
 //=================================================
-  public static function get_user($uid ) {
+  public static function _get_user($uid ) {
     $tblname=self::table_name();
     $db=api_g('db');
     //字段名

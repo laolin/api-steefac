@@ -285,7 +285,7 @@ class class_steeobj{
       return API::msg(202001,'E:type:',$type);
     }
     
-    // $user=stee_user::get_user($uid );
+    // $user=stee_user::_get_user($uid );
     // if(!($user['is_admin'] & 0x10000)) {
       // return API::msg(202001,'not sysadmin '.$user['is_admin']);
     // }
@@ -306,7 +306,7 @@ class class_steeobj{
     $data['id']=$r;
     
     //不是系统管理员，创建后，自动成为新厂的管理员
-    $user=stee_user::get_user($uid );
+    $user=stee_user::_get_user($uid );
     if(!($user['is_admin'] & 0x10000)) {
       $appadmin=stee_user::apply_admin($type,$uid,$r);
       $data['appadmin'] = $appadmin;
@@ -417,7 +417,7 @@ class class_steeobj{
     //页数
     $count=intval(API::INP('count'));
     $count_max=50;
-    $user=stee_user::get_user($uid );
+    $user=stee_user::_get_user($uid );
     if( (intval($user['is_admin']) & 0x10000) ) {
       $count_max=5000;
     }
@@ -505,7 +505,7 @@ class class_steeobj{
     }
     
     $uid=intval(API::INP('uid'));
-    $user=stee_user::get_user($uid );
+    $user=stee_user::_get_user($uid );
     
     if(!($user['is_admin']& 0x10000) && !strpos('#,'.$user[$type.'_can_admin'].',', ','.$id.',') ) {
       return API::msg(202001,"not admin($id) or sysadmin");
@@ -548,7 +548,7 @@ class class_steeobj{
     }
 
     $uid=intval(API::INP('uid'));
-    $user=stee_user::get_user($uid );
+    $user=stee_user::_get_user($uid );
     
     //只允许系统管理员删除
     //if(!($user['is_admin']& 0x10000) && !strpos('#,'.$user['fac_can_admin'].',', ','.$id.',') ) {
