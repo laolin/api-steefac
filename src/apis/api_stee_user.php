@@ -68,6 +68,27 @@ class class_stee_user {
     
     return API::data($r);
   }
+   /**
+   *  API:
+   *    /steel_user/get_user_rights
+   *  获得 用户权限
+   */
+  public static function get_user_rights( ) {
+    
+    if(!self::userVerify()) {
+      return API::msg(202001,'Error userVerify@get');
+    }
+    
+    $uid=intval(API::INP('uid'));//执行者
+    $userid=intval(API::INP('userid'));//查询对象
+    
+    $user=stee_user::_get_user($uid );
+    if(!($user['is_admin'] & 0x10000)) {
+      return API::msg(202001,'not sysadmin '.$user['is_admin']);
+    }
+    
+    return stee_user::get_user_rights($userid);
+  }
   
   
    /**

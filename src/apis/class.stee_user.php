@@ -14,7 +14,7 @@ class stee_user {
     return $prefix.$item;
   }
   static function _keys(   ) {
-    return ['id','uid','name','is_admin','update_at','fac_can_admin','steefac_can_admin','steeproj_can_admin'];
+    return ['id','uid','name','is_admin','update_at','fac_can_admin','steefac_can_admin','steeproj_can_admin','rights','score'];
   }  
   static function  _check_obj_type( $type ) {
     $ok=['steefac','steeproj'];
@@ -86,6 +86,34 @@ class stee_user {
     if( !$r2 ){
       return API::msg(202001,"run sql err");
     }
+    return API::data($r2);
+  }
+  
+  
+  //==================================================================
+  //get用户权限
+  public static function get_user_rights($userid) {
+    $r=self::_get_user($userid);
+    if(!isset($r['rights'])) {
+      return API::msg(202001,"err:UID:".$userid);
+    }
+    return API::data($r['rights']);
+  }
+  //======================
+  //给用户加权限
+  public static function add_user_rights($userid,$rights) {
+    $tblname=self::table_name();
+    $db=api_g('db');
+    $r=self::_get_user($userid);
+    if(!isset($r['rights'])) {
+      return API::msg(202001,"err:UID:".$userid);
+    }
+    $r['rights']=$r['rights']|$rights;
+    
+    //字段名
+    $ky=self::_keys();
+    
+    $r2=$db->update($tblname,['rights'=>$r['rights']],['id'=>$userid]);
     return API::data($r2);
   }
 //=================================================
