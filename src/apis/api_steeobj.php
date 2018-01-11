@@ -37,6 +37,35 @@ class class_steeobj{
     return $prefix.$name;
   }
   
+  //预览用到的字段，用在 /overview_addr API中
+  static function keys_addr( $type ) {
+    $kr=[];
+    //钢构厂
+    $kr['steefac']=[
+      'id',
+      "name",
+      "update_at",
+      "latE7",
+      "lngE7",
+      "citycode",
+      "goodat",
+      "cap_6m"
+    ];
+    $kr['steeproj']= [
+      'id',
+      "name",
+      "update_at",
+      "latE7",
+      "lngE7",
+      "citycode",
+      "in_month",
+      "need_steel"
+    ];
+    
+    if(!$kr[$type])$type='steefac';
+    return $kr[$type];
+  }
+  
   
   //预览用到的字段，用在 /li API中
   static function keys_preivew( $type ) {
@@ -336,6 +365,31 @@ class class_steeobj{
     $idsArr=explode(',',$ids);
     $r=$db->select($tblname, $ky,
       ['and' => ['id'=>$idsArr,'or'=>['mark'=>null,'mark#'=>''] ] ] );
+
+    return API::data($r);
+  }
+  /**
+   *  API:
+   *    /steefac/overview_addr
+   *  返回总览，全部的地址信息
+   */
+  public static function overview_addr ( ) {
+    $type=API::INP('type');
+    if(!stee_user::_check_obj_type( $type )) {
+      return API::msg(202001,'E:type:',$type);
+    }
+    $tblname=self::table_name($type);
+    $db=api_g('db');
+    
+    //字段名
+    $ky=self::keys_addr($type);
+    
+    $idsArr=explode(',',$ids);
+    $r=$db->select($tblname, $ky,
+      [
+        'or'=>['mark'=>null,'mark#'=>''],
+        "ORDER" => ["update_at DESC","id DESC"]
+      ] );
 
     return API::data($r);
   }
