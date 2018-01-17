@@ -10,26 +10,31 @@
 
 ## 0.3 index.config 设置
 
-在 Api-core/src/目录 下的 index.config.php 最后一行 可以加载一个特殊文件
+根据 Api-core/src/目录 下的 index.config.php 最后一行
+会自动搜索并加载一个特殊文件
 '../../api-bak/index.config__test__.php'
 
-故可以复制一个 index.config.php 到该目录下，
-然后修改设置。可避免设置内容上传到git仓库中。
+故可以复制 index.config.php 到 ../api-bak/index.config__test__.php，
+然后修改此设置文件。
 
 此法可避免设置内容上传到git仓库中。
 
 一般需要修改3个配置，参考第 `1.3.3` 节。
 
 ### (1) 定义 MYSQL数据库
-### (2) 定义 微信APP
-### (3) 定义 apis路径，可以把steefac的API指定到 api-steefac/src/apis 路径
+### (2) 定义 apis路径，可以把steefac的API指定到 api-steefac仓库的/src/apis 路径下
+### (3) 定义 微信APP
 
+## 0.4 API地址为Api-core/src/index.php所在的路径
 
 # 1 说明
 
 ## 1.1 客户端API 地址设置
 
 在 app/app-steefac.define.js 文件中定义
+
+测试时apiRoot可临时修改为本地的API地址
+apiWxAuth不可修改。仅用于微信登录。
 
 ```
   apiRoot: 'https://api.qinggaoshou.com/api-eb', //一般的API
@@ -43,6 +48,7 @@
 
 数据表说明：
 
+api-core中用的：
  *  api_tbl_log 访问记录
  *  api_tbl_tokenbucket 令牌桶，用于控制访问量
  *  api_tbl_user　用户基本字段
@@ -50,13 +56,13 @@
  *  api_tbl_wxuser 微信信息
  *  api_tbl_uploads 上传文件记录
 
- * api_tbl_feed
- * api_tbl_comment
+ * api_tbl_feed    feed数据
+ * api_tbl_comment feed的评论
 
- 
- * api_tbl_steelfactory
- * api_tbl_steelproject
- * api_tbl_stee_user
+api-steefac中用的：
+ * api_tbl_steelfactory 钢构厂
+ * api_tbl_steelproject 项目
+ * api_tbl_stee_user    用户资料
 
  
 ## 1.3 API 的 PHP 文件
