@@ -5,16 +5,22 @@
 
 参考第 `1.2` 点
 
-## 0.2 Api-core 和 api-steefac仓库
+## 0.2 `Api-core` 和 `api-steefac`仓库
 克隆回此两仓库
 
-## 0.3 index.config 设置
+## 0.3 API地址
 
-根据 Api-core/src/目录 下的 index.config.php 最后一行
+API地址为 `Api-core/src/index.php` 所在的路径
+
+`api-steefac` 中的 api通过下面的配置文件调用
+
+## 0.4 `index.config` 设置
+
+根据 `Api-core/src/`目录 下的 `index.config.php` 最后一行
 会自动搜索并加载一个特殊文件
-'../../api-bak/index.config__test__.php'
+`'../../api-bak/index.config__test__.php'`
 
-故可以复制 index.config.php 到 ../api-bak/index.config__test__.php，
+故可以复制 `index.config.php` 到 `../api-bak/index.config__test__.php`，
 然后修改此设置文件。
 
 此法可避免设置内容上传到git仓库中。
@@ -22,10 +28,9 @@
 一般需要修改3个配置，参考第 `1.3.3` 节。
 
 ### (1) 定义 MYSQL数据库
-### (2) 定义 apis路径，可以把steefac的API指定到 api-steefac仓库的/src/apis 路径下
+### (2) 定义 apis路径，可以把`steefac`的API指定到 `api-steefac`仓库的`/src/apis` 路径下
 ### (3) 定义 微信APP
 
-## 0.4 API地址为Api-core/src/index.php所在的路径
 
 # 1 说明
 
