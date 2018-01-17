@@ -43,7 +43,7 @@ class class_steeobj{
     //钢构厂
     $kr['steefac']=[
       'id',
-      "name",
+      //"name",
       "update_at",
       "latE7",
       "lngE7",
