@@ -17,10 +17,11 @@ class class_steesys {
   
   //test
   public static function test( ) {
-    $r=self::userVerify();
-    if(!$r)
-      return API::msg(202001,'error userVerify');
-    return API::data('Test passed.');
+    //$r=self::userVerify();
+    //if(!$r)
+    //  return API::msg(202001,'error userVerify');
+    $tk=1;//WX::GetToken();
+    return API::data(['Test passed.',$tk]);
   }
  
 //=========================================================
@@ -56,17 +57,95 @@ class class_steesys {
       "SELECT count(*) as nProj FROM $tblname WHERE `mark` is  null or `mark` = '' "
     )->fetchAll()[0]['nProj'];
     
+    $uid=intval(API::INP('uid'));
+    $data['wx']=WX::update_user_by_uid( $uid );
     if(!self::userVerify()) {
       return API::data($data);
     }
-    $uid=intval(API::INP('uid'));
-    $data['me']=($r);
     $r=stee_user::_get_user($uid);
+    $data['me']=($r?$r:1);//这里待改进（需要客户端更新）
 
         
 
     return API::data($data);
   }
+  
+ 
+  public static function send_todo_msg( ) {
+    
+    $uid=intval(API::INP('uid'));
+    $user=stee_user::_get_user($uid );
+    if(!($user['is_admin'] & 0x10000)) {
+      return API::msg(202001,'not sysadmin '.$user['is_admin']);
+    }
+    
+    $to_uid=API::INP('to_uid');
+    if(!$to_uid) {
+      return API::msg(202001,'E:to_uid:'.$to_uid);
+    }
+    $title=API::INP('title');
+    if(!$title) {
+      return API::msg(202001,'E:title:'.$title);
+    }
+    $content=API::INP('content');
+    if(!$content) {
+      return API::msg(202001,'E:content:'.$content);
+    }
+    $url=API::INP('url');
+    if(!$url) {
+      return API::msg(202001,'E:url:'.$url);
+    }
+    $url='https://qinggaoshou.com/gstools/steefac/#!'.$url;
+    
+    return self::sendTodoTplMsg($to_uid,$title,$content,$url);
+  }  
+  
+  
+  
+  
+  /**
+   *
+   *  【模板消息】  
+   *
+   *  标题：
+   *     待办事项提醒
+   *  
+   *  详细内容：
+   *    {{first.DATA}}
+   *    待办内容：{{keyword1.DATA}}
+   *    基本信息：{{keyword2.DATA}}
+   *    时间：{{keyword3.DATA}}
+   *    {{remark.DATA}}
+   *  
+   */
+  static function sendTodoTplMsg(
+    $msg_to_uid, $title, $content,$url
+  ) {
+  
+    $app='qgs-mp';//使用哪个公众号发消息
+    $appid=api_g('WX_APPS')[$app][0];
+    
+    $oids=WX::getOpenIdByUid($appid, [$msg_to_uid] );
+    if(!count($oids)) {
+      return API::msg(701,"Cannot send to uid:$msg_to_uid");
+    }
+
+    $D=[];
+    $D["touser"] = $oids[0]['openid'];
+    $D["template_id"]="Nv4ZwapozItcKb6VvkcCk7m1-UjkqLEss8xwMuAAQj8";
+		$D["url"] = $url;
+    $D["data"]=[
+      'first'=>['value'=>'中国钢结构产能地图系统消息','color'=>'#0099ff'],
+      'keyword1'=>['value'=>$title,'color'=>'#222222'],
+      'keyword2'=>['value'=>$content,'color'=>'#222222'],
+      'keyword3'=>['value'=>date('Y年m月d日 H:i'),'color'=>'#222222'],
+      'remark'=>['value'=>"请点击详情及时处理",'color'=>'#0099ff']
+    ];
+
+    return WX::send_tpl_message($D);
+    
+  }
+
   
 
 }
