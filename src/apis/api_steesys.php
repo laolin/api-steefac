@@ -71,7 +71,8 @@ class class_steesys {
 
     // 该用户id($uid)今天已发送的几种数量['and'=>['uid'=>$uid, 'time[~]'=>"%$today"], 'type'=>['公司推广', '项目推广']]
     $json = NewApi::post(LOCAL_API_ROOT, "use-records/data/count", [
-      'and'=>['uid'=>$uid, 'time[~]'=>"%$today"],
+      'module' => 'cmoss',
+      'and'=>['uid'=>$uid, "time[~]"=>NewApi::today() . "%"],
       'k1'=>['公司推广', '项目推广']
     ]);
     $data['datas']['msg'] = [
