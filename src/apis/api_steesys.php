@@ -73,11 +73,12 @@ class class_steesys {
     $json = NewApi::post(LOCAL_API_ROOT, "use-records/data/count", [
       'module' => 'cmoss',
       'and'=>['uid'=>$uid, "time[~]"=>NewApi::today() . "%"],
-      'k1'=>['公司推广', '项目推广']
+      'k2' => '发送推广消息',
+      'k1' =>['公司', '项目']
     ]);
     $data['datas']['msg'] = [
       'json' => $json,
-      'used' => $json['datas']['rows'], //['公司推广'=> 0, '项目推广'=> 0],
+      'used' => $json['datas']['used'], //['公司'=> 0, '项目'=> 0],
       'max' => ['公司'=>50, '项目'=>50, '全部'=>55]
     ];
 
