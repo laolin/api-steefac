@@ -3,6 +3,10 @@
 /*
  
 */
+
+use DJApi\API as NewApi;
+
+
 require_once dirname( __FILE__ ) . '/class.stee_user.php';
 class class_steesys {
     
@@ -65,7 +69,16 @@ class class_steesys {
     $r=stee_user::_get_user($uid);
     $data['me']=($r?$r:1);//这里待改进（需要客户端更新）
 
-        
+    // 该用户id($uid)今天已发送的几种数量['and'=>['uid'=>$uid, 'time[~]'=>"%$today"], 'type'=>['公司推广', '项目推广']]
+    $json = NewApi::post(LOCAL_API_ROOT, "use-records/data/count", [
+      'and'=>['uid'=>$uid, 'time[~]'=>"%$today"],
+      'k1'=>['公司推广', '项目推广']
+    ]);
+    $data['datas']['msg'] = [
+      'json' => $json,
+      'used' => $json['datas']['rows'], //['公司推广'=> 0, '项目推广'=> 0],
+      'max' => ['公司'=>50, '项目'=>50, '全部'=>55]
+    ];
 
     return API::data($data);
   }
