@@ -3,9 +3,11 @@
 /*
  
 */
+use DJApi;
 require_once dirname( __FILE__ ) . '/class.stee_user.php';
 class class_steeobj{
     
+  const MAX_REREAD_DAYS = 10; // 在几天之内查看的，允许直接再次查看而不用额度
     
   public static function main( $para1,$para2) {
     $res=API::data(['time'=>time().' - steefac is ready.']);
@@ -322,6 +324,7 @@ class class_steeobj{
    *    /steefac/detail
    */
   public static function detail( ) {
+    $uid = API::INP('uid');
     $type=API::INP('type');
     if(!stee_user::_check_obj_type( $type )) {
       return API::msg(202001,'E:type:',$type);
@@ -341,6 +344,27 @@ class class_steeobj{
     $r=$db->get($tblname, $ky,
       ['and' => ['id'=>$id,'or'=>['mark'=>null,'mark#'=>''] ] ] );
 
+    if($r){
+      // 最近几天查看情况
+      $t1 = DJApi\API::today(- self::MAX_REREAD_DAYS);
+      $t2 = DJApi\API::today( 1 );
+      $jsonReaded = DJApi\API::call(LOCAL_API_ROOT, "use-records/data/select", [
+        'module' => 'cmoss',
+        'field' =>'sum(n) as n',
+        'and'=>DJApi\API::cn_json([
+          'uid'=>$uid,
+          "time[<>]"=>[$t1, $t2],
+          'k1' => $type,
+          'k2' => ['使用额度查看', '推广查看'],
+          'v1' => $id,
+        ])
+      ]);
+      // 最近几天未查看的，不予返回。
+      $n = 0 + $jsonReaded['datas']['rows'][0];
+      if(!$n){
+        return DJApi\API::error(DJApi\API::E_NEED_RIGHT, '未确认要查看', $jsonReaded);
+      }
+    }
     return API::data($r);
   }
   /**
