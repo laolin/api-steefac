@@ -346,23 +346,10 @@ class class_steeobj{
 
     if($r){
       // 最近几天查看情况
-      $t1 = DJApi\API::today(- self::MAX_REREAD_DAYS);
-      $t2 = DJApi\API::today( 1 );
-      $jsonReaded = DJApi\API::call(LOCAL_API_ROOT, "use-records/data/select", [
-        'module' => 'cmoss',
-        'field' =>'sum(n) as n',
-        'and'=>DJApi\API::cn_json([
-          'uid'=>$uid,
-          "time[<>]"=>[$t1, $t2],
-          'k1' => $type,
-          'k2' => ['使用额度查看', '推广查看'],
-          'v1' => $id,
-        ])
-      ]);
-      // 最近几天未查看的，不予返回。
-      $n = 0 + $jsonReaded['datas']['rows'][0];
-      if(!$n){
-        return DJApi\API::error(DJApi\API::E_NEED_RIGHT, '未确认要查看', $jsonReaded);
+      // 不受限制
+      $canReadDetail = \MyClass\SteeData::canReadDetail($uid, $type, $id);
+      if(!$canReadDetail){
+        return DJApi\API::error(DJApi\API::E_NEED_RIGHT, '无权限，或未确认要查看');
       }
     }
     return API::data($r);
