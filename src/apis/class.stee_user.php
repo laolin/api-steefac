@@ -89,6 +89,29 @@ class stee_user {
     return API::data($r2);
   }
   
+  /**
+   * 移除管理员
+   */
+  public static function remove_admin($type, $userid, $obj_id) {
+    $tblname=self::table_name();
+    $db=api_g('db');
+    //字段名
+    $ky=self::_keys();
+    if(!self::_check_obj_type($type)){
+      return API::msg(202001,"E:type:".$type);
+    }
+    // 分析数据
+    $col_name = $type.'_can_admin';
+    $userRow = self::_get_user($userid);
+    $objIds = explode(',', $userRow[$col_name]);
+    if(!$objIds || !in_array($obj_id, $objIds)) {
+      return API::msg(202001, ["not exit", "DB"=>$db->log(), $userRow, $objIds]);
+    }
+    // 移除这个管理员
+    $newObjIds = array_values(array_diff($objIds, [$obj_id]));
+    $n = $db->update($tblname, [$col_name=>join(',', $newObjIds)], ['id'=>$userRow['id']]);
+    return API::data(['n'=>$n]);
+  }
   
   //==================================================================
   //get用户权限

@@ -49,6 +49,15 @@ class class_stee_user {
     $facid=intval(API::INP('facid'));
     return stee_user::apply_admin($type,$userid,$facid);
   }  
+  public static function remove_admin( ) {
+    if(!self::userVerify()) {
+      return API::msg(202001, 'Error userVerify@get');
+    }
+    $type   = API::INP('type');
+    $userid = intval(API::INP('userid'));
+    $facid  = intval(API::INP('facid'));
+    return stee_user::remove_admin($type, $userid, $facid);
+  }
 
 
 
