@@ -41,22 +41,33 @@ class class_stee_user {
     return stee_user::apply_fac_admin($userid,$facid);
   }  
   public static function apply_admin( ) {
+    return self::_apply_admin('uid', '申请管理员', 'apply_admin');
+  }
+  public static function restore_admin( ) {
+    return self::_apply_admin('userid', '恢复管理员', 'apply_admin');
+  }
+  public static function remove_admin( ) {
+    return self::_apply_admin('userid', '移除管理员', 'remove_admin');
+  }
+  protected static function _apply_admin($uidFieldName, $ac, $fn='apply_admin') {
     if(!self::userVerify()) {
       return API::msg(202001,'Error userVerify@get');
     }
-    $type=API::INP('type');
-    $userid=intval(API::INP('uid'));
-    $facid=intval(API::INP('facid'));
-    return stee_user::apply_admin($type,$userid,$facid);
-  }  
-  public static function remove_admin( ) {
-    if(!self::userVerify()) {
-      return API::msg(202001, 'Error userVerify@get');
-    }
-    $type   = API::INP('type');
-    $userid = intval(API::INP('userid'));
-    $facid  = intval(API::INP('facid'));
-    return stee_user::remove_admin($type, $userid, $facid);
+    $type   =API::INP('type');
+    $userid =intval(API::INP($uidFieldName));
+    $facid  =intval(API::INP('facid'));
+    // 先操作一下
+    $json = stee_user::$fn($type, $userid, $facid);
+    // 记录操作
+    $record = \MyClass\SteeData::recordItem($userid, [
+      'k1' => $ac,
+      'k2' => $userid,
+      'v1' => $type,
+      'v2' => $facid,
+      'json' => $json['errcode']==0 ? '' : '-1' // -1 表示操作失败
+    ]);
+    \DJApi\API::debug($record, 'record');
+    return $json;
   }
 
 
